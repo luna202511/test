@@ -1,13 +1,12 @@
-code
-Html
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>±Ş½Ä Á¤º¸ ¾Ë¸®¹Ì</title>
+    <title>ê¸‰ì‹ ì •ë³´ ì•Œë¦¬ë¯¸</title>
     <style>
-        /* CSS ½ºÅ¸ÀÏ */
+        /* CSS ìŠ¤íƒ€ì¼ */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
 
         body {
@@ -92,7 +91,7 @@ Html
         }
         
         #meal-info .meal-content {
-            white-space: pre-line; /* <br> ÅÂ±×¸¦ ÁÙ¹Ù²ŞÀ¸·Î ÀÎ½Ä */
+            white-space: pre-line; /* <br> íƒœê·¸ë¥¼ ì¤„ë°”ê¿ˆìœ¼ë¡œ ì¸ì‹ */
         }
         
         #meal-info .calorie-info {
@@ -111,27 +110,27 @@ Html
 <body>
 
     <div class="container">
-        <h1>¿À´ÃÀÇ ±Ş½ÄÀº?</h1>
+        <h1>ì˜¤ëŠ˜ì˜ ê¸‰ì‹ì€?</h1>
         <div class="input-group">
             <input type="date" id="date-picker">
-            <button id="get-meal-btn">±Ş½Ä Á¶È¸</button>
+            <button id="get-meal-btn">ê¸‰ì‹ ì¡°íšŒ</button>
         </div>
         <div id="meal-info">
-            <p>Á¶È¸ÇÒ ³¯Â¥¸¦ ¼±ÅÃÇØÁÖ¼¼¿ä.</p>
+            <p>ì¡°íšŒí•  ë‚ ì§œë¥¼ ì„ íƒí•´ì£¼ì„¸ìš”.</p>
         </div>
         <div class="footer">
-            <p>º» Á¤º¸´Â ³ªÀÌ½º ±³À°Á¤º¸ °³¹æ Æ÷ÅĞÀÇ µ¥ÀÌÅÍ¸¦ È°¿ëÇÏ¿© Á¦°øµË´Ï´Ù.</p>
+            <p>ë³¸ ì •ë³´ëŠ” ë‚˜ì´ìŠ¤ êµìœ¡ì •ë³´ ê°œë°© í¬í„¸ì˜ ë°ì´í„°ë¥¼ í™œìš©í•˜ì—¬ ì œê³µë©ë‹ˆë‹¤.</p>
         </div>
     </div>
 
     <script>
-        // JavaScript ·ÎÁ÷
+        // JavaScript ë¡œì§
         document.addEventListener('DOMContentLoaded', () => {
             const datePicker = document.getElementById('date-picker');
             const getMealBtn = document.getElementById('get-meal-btn');
             const mealInfoDiv = document.getElementById('meal-info');
 
-            // ÆäÀÌÁö ·Îµå ½Ã ¿À´Ã ³¯Â¥·Î ±âº» ¼³Á¤
+            // í˜ì´ì§€ ë¡œë“œ ì‹œ ì˜¤ëŠ˜ ë‚ ì§œë¡œ ê¸°ë³¸ ì„¤ì •
             datePicker.value = new Date().toISOString().slice(0, 10);
 
             getMealBtn.addEventListener('click', fetchMealData);
@@ -139,24 +138,24 @@ Html
             async function fetchMealData() {
                 const selectedDate = datePicker.value;
                 if (!selectedDate) {
-                    alert('³¯Â¥¸¦ ¼±ÅÃÇØÁÖ¼¼¿ä.');
+                    alert('ë‚ ì§œë¥¼ ì„ íƒí•´ì£¼ì„¸ìš”.');
                     return;
                 }
 
-                // ³¯Â¥ Çü½ÄÀ» YYYY-MM-DD ¿¡¼­ YYYYMMDD ·Î º¯°æ
+                // ë‚ ì§œ í˜•ì‹ì„ YYYY-MM-DD ì—ì„œ YYYYMMDD ë¡œ ë³€ê²½
                 const formattedDate = selectedDate.replace(/-/g, '');
                 
-                // API ±âº» Á¤º¸
-                const ATPT_OFCDC_SC_CODE = 'J10'; // ¼­¿ïÆ¯º°½Ã±³À°Ã»
-                const SD_SCHUL_CODE = '7530581'; // ÇØ´ç ÇĞ±³ ÄÚµå
+                // API ê¸°ë³¸ ì •ë³´
+                const ATPT_OFCDC_SC_CODE = 'J10'; // ì„œìš¸íŠ¹ë³„ì‹œêµìœ¡ì²­
+                const SD_SCHUL_CODE = '7530581'; // í•´ë‹¹ í•™êµ ì½”ë“œ
 
-                // CORS ¹®Á¦¸¦ ¿ìÈ¸ÇÏ±â À§ÇÑ ÇÁ·Ï½Ã ¼­¹ö URL
-                // Âü°í: ÀÌ ÇÁ·Ï½Ã´Â Å×½ºÆ®¿ëÀ¸·Î, ½ÇÁ¦ ¼­ºñ½º¿¡¼­´Â ÀÚÃ¼ ¼­¹ö¸¦ ±¸ÃàÇØ¾ß ÇÕ´Ï´Ù.
+                // CORS ë¬¸ì œë¥¼ ìš°íšŒí•˜ê¸° ìœ„í•œ í”„ë¡ì‹œ ì„œë²„ URL
+                // ì°¸ê³ : ì´ í”„ë¡ì‹œëŠ” í…ŒìŠ¤íŠ¸ìš©ìœ¼ë¡œ, ì‹¤ì œ ì„œë¹„ìŠ¤ì—ì„œëŠ” ìì²´ ì„œë²„ë¥¼ êµ¬ì¶•í•´ì•¼ í•©ë‹ˆë‹¤.
                 const proxy = 'https://cors-anywhere.herokuapp.com/';
                 
                 const apiUrl = `${proxy}https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${formattedDate}`;
 
-                mealInfoDiv.innerHTML = '±Ş½Ä Á¤º¸¸¦ ºÒ·¯¿À´Â ÁßÀÔ´Ï´Ù...';
+                mealInfoDiv.innerHTML = 'ê¸‰ì‹ ì •ë³´ë¥¼ ë¶ˆëŸ¬ì˜¤ëŠ” ì¤‘ì…ë‹ˆë‹¤...';
                 mealInfoDiv.classList.add('loading');
 
                 try {
@@ -166,15 +165,15 @@ Html
                     }
                     const xmlString = await response.text();
                     
-                    // XML ¹®ÀÚ¿­À» ÆÄ½ÌÇÏ¿© DOM °´Ã¼·Î º¯È¯
+                    // XML ë¬¸ìì—´ì„ íŒŒì‹±í•˜ì—¬ DOM ê°ì²´ë¡œ ë³€í™˜
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(xmlString, "text/xml");
                     
-                    // ¿¡·¯ ÄÚµå È®ÀÎ
+                    // ì—ëŸ¬ ì½”ë“œ í™•ì¸
                     const resultCode = xmlDoc.querySelector('RESULT > CODE');
                     if (resultCode && resultCode.textContent !== 'INFO-000') {
                         const resultMessage = xmlDoc.querySelector('RESULT > MESSAGE').textContent;
-                        // "ÇØ´çÇÏ´Â µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù." ¸Ş½ÃÁö Ã³¸®
+                        // "í•´ë‹¹í•˜ëŠ” ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤." ë©”ì‹œì§€ ì²˜ë¦¬
                         if (resultCode.textContent === 'INFO-200') {
                             displayMealInfo(null);
                         } else {
@@ -187,7 +186,7 @@ Html
 
                 } catch (error) {
                     console.error('Fetch Error:', error);
-                    mealInfoDiv.innerHTML = `<p style="color: red;">¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù. Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä.<br>(${error.message})</p>`;
+                    mealInfoDiv.innerHTML = `<p style="color: red;">ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤. ì ì‹œ í›„ ë‹¤ì‹œ ì‹œë„í•´ì£¼ì„¸ìš”.<br>(${error.message})</p>`;
                 } finally {
                     mealInfoDiv.classList.remove('loading');
                 }
@@ -195,21 +194,21 @@ Html
 
             function displayMealInfo(data) {
                 if (!data) {
-                    mealInfoDiv.innerHTML = '<p>ÇØ´ç ³¯Â¥ÀÇ ±Ş½Ä Á¤º¸°¡ ¾ø½À´Ï´Ù.</p>';
+                    mealInfoDiv.innerHTML = '<p>í•´ë‹¹ ë‚ ì§œì˜ ê¸‰ì‹ ì •ë³´ê°€ ì—†ìŠµë‹ˆë‹¤.</p>';
                     return;
                 }
                 
-                // ÇÊ¿äÇÑ Á¤º¸ ÃßÃâ
-                const mealName = data.querySelector('DDISH_NM')?.textContent || 'Á¤º¸ ¾øÀ½';
-                const calInfo = data.querySelector('CAL_INFO')?.textContent || 'Ä®·Î¸® Á¤º¸ ¾øÀ½';
+                // í•„ìš”í•œ ì •ë³´ ì¶”ì¶œ
+                const mealName = data.querySelector('DDISH_NM')?.textContent || 'ì •ë³´ ì—†ìŒ';
+                const calInfo = data.querySelector('CAL_INFO')?.textContent || 'ì¹¼ë¡œë¦¬ ì •ë³´ ì—†ìŒ';
 
-                // <br/> ÅÂ±×¸¦ ½ÇÁ¦ ÁÙ¹Ù²ŞÀ¸·Î º¯È¯ÇÏ¿© Ç¥½Ã
+                // <br/> íƒœê·¸ë¥¼ ì‹¤ì œ ì¤„ë°”ê¿ˆìœ¼ë¡œ ë³€í™˜í•˜ì—¬ í‘œì‹œ
                 const formattedMealName = mealName.replace(/<br\s*\/?>/gi, '\n');
                 
                 mealInfoDiv.innerHTML = `
-                    <h3>?? ${datePicker.value} ±Ş½Ä ¸Ş´º</h3>
+                    <h3>ğŸš ${datePicker.value} ê¸‰ì‹ ë©”ë‰´</h3>
                     <div class="meal-content">${formattedMealName}</div>
-                    <div class="calorie-info">?? ${calInfo}</div>
+                    <div class="calorie-info">ğŸ’¡ ${calInfo}</div>
                 `;
             }
         });
@@ -217,3 +216,4 @@ Html
 
 </body>
 </html>
+
