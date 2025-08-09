@@ -1,0 +1,219 @@
+code
+Html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>급식 정보 알리미</title>
+    <style>
+        /* CSS 스타일 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        input[type="date"] {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #555;
+            -webkit-appearance: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #meal-info {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fafafa;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            min-height: 150px;
+            text-align: left;
+            line-height: 1.8;
+        }
+        
+        #meal-info.loading {
+            text-align: center;
+        }
+
+        #meal-info h3 {
+            margin-top: 0;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        #meal-info .meal-content {
+            white-space: pre-line; /* <br> 태그를 줄바꿈으로 인식 */
+        }
+        
+        #meal-info .calorie-info {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>오늘의 급식은?</h1>
+        <div class="input-group">
+            <input type="date" id="date-picker">
+            <button id="get-meal-btn">급식 조회</button>
+        </div>
+        <div id="meal-info">
+            <p>조회할 날짜를 선택해주세요.</p>
+        </div>
+        <div class="footer">
+            <p>본 정보는 나이스 교육정보 개방 포털의 데이터를 활용하여 제공됩니다.</p>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript 로직
+        document.addEventListener('DOMContentLoaded', () => {
+            const datePicker = document.getElementById('date-picker');
+            const getMealBtn = document.getElementById('get-meal-btn');
+            const mealInfoDiv = document.getElementById('meal-info');
+
+            // 페이지 로드 시 오늘 날짜로 기본 설정
+            datePicker.value = new Date().toISOString().slice(0, 10);
+
+            getMealBtn.addEventListener('click', fetchMealData);
+            
+            async function fetchMealData() {
+                const selectedDate = datePicker.value;
+                if (!selectedDate) {
+                    alert('날짜를 선택해주세요.');
+                    return;
+                }
+
+                // 날짜 형식을 YYYY-MM-DD 에서 YYYYMMDD 로 변경
+                const formattedDate = selectedDate.replace(/-/g, '');
+                
+                // API 기본 정보
+                const ATPT_OFCDC_SC_CODE = 'J10'; // 서울특별시교육청
+                const SD_SCHUL_CODE = '7530581'; // 해당 학교 코드
+
+                // CORS 문제를 우회하기 위한 프록시 서버 URL
+                // 참고: 이 프록시는 테스트용으로, 실제 서비스에서는 자체 서버를 구축해야 합니다.
+                const proxy = 'https://cors-anywhere.herokuapp.com/';
+                
+                const apiUrl = `${proxy}https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${formattedDate}`;
+
+                mealInfoDiv.innerHTML = '급식 정보를 불러오는 중입니다...';
+                mealInfoDiv.classList.add('loading');
+
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const xmlString = await response.text();
+                    
+                    // XML 문자열을 파싱하여 DOM 객체로 변환
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+                    
+                    // 에러 코드 확인
+                    const resultCode = xmlDoc.querySelector('RESULT > CODE');
+                    if (resultCode && resultCode.textContent !== 'INFO-000') {
+                        const resultMessage = xmlDoc.querySelector('RESULT > MESSAGE').textContent;
+                        // "해당하는 데이터가 없습니다." 메시지 처리
+                        if (resultCode.textContent === 'INFO-200') {
+                            displayMealInfo(null);
+                        } else {
+                            throw new Error(resultMessage);
+                        }
+                    } else {
+                        const mealData = xmlDoc.querySelector('row');
+                        displayMealInfo(mealData);
+                    }
+
+                } catch (error) {
+                    console.error('Fetch Error:', error);
+                    mealInfoDiv.innerHTML = `<p style="color: red;">오류가 발생했습니다. 잠시 후 다시 시도해주세요.<br>(${error.message})</p>`;
+                } finally {
+                    mealInfoDiv.classList.remove('loading');
+                }
+            }
+
+            function displayMealInfo(data) {
+                if (!data) {
+                    mealInfoDiv.innerHTML = '<p>해당 날짜의 급식 정보가 없습니다.</p>';
+                    return;
+                }
+                
+                // 필요한 정보 추출
+                const mealName = data.querySelector('DDISH_NM')?.textContent || '정보 없음';
+                const calInfo = data.querySelector('CAL_INFO')?.textContent || '칼로리 정보 없음';
+
+                // <br/> 태그를 실제 줄바꿈으로 변환하여 표시
+                const formattedMealName = mealName.replace(/<br\s*\/?>/gi, '\n');
+                
+                mealInfoDiv.innerHTML = `
+                    <h3>?? ${datePicker.value} 급식 메뉴</h3>
+                    <div class="meal-content">${formattedMealName}</div>
+                    <div class="calorie-info">?? ${calInfo}</div>
+                `;
+            }
+        });
+    </script>
+
+</body>
+</html>
